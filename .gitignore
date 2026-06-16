@@ -2,6 +2,7 @@
 # Ignore local env files but keep the template tracked
 .env
 .env.local
+.env.production
 .env.*
 !.env.template
 

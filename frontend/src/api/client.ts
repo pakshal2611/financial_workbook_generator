@@ -12,7 +12,7 @@ import type {
 // ============================================================
 
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_URL,
   headers: { "Content-Type": "application/json" },
   timeout: 30000, // 30 second timeout
 });
@@ -40,7 +40,7 @@ api.interceptors.response.use(
 /** GET / — check if backend is alive */
 export async function checkBackendHealth(): Promise<boolean> {
   try {
-    const response = await axios.get("http://localhost:8000/", {
+    const response = await axios.get(import.meta.env.VITE_API_URL, {
       timeout: 5000,
     });
     console.log("✓ Backend is reachable:", response.data);
