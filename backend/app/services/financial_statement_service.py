@@ -1,4 +1,5 @@
 import json
+from unittest import result
 
 from sqlalchemy.orm import Session
 
@@ -63,6 +64,20 @@ def extract_financial_statements(
     )
 
     result = response.choices[0].message.content
+
+    result = result.strip()
+
+    if result.startswith("```json"):
+        result = result[len("```json"):]
+
+    if result.startswith("```"):
+        result = result[3:]
+
+    if result.endswith("```"):
+        result = result[:-3]
+
+    result = result.strip()
+
     result_json = json.loads(result)
 
     income_statement = FinancialStatement(

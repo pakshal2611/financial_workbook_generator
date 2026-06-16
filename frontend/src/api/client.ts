@@ -106,7 +106,9 @@ export async function extractStatements(
   documentId: number
 ): Promise<MessageResponse> {
   const { data } = await api.post<MessageResponse>(
-    `/financial-statements/extract/${documentId}`
+    `/financial-statements/extract/${documentId}`,
+    null,
+    { timeout: 60000 } // 60 second timeout for potentially long extraction
   );
   return data;
 }

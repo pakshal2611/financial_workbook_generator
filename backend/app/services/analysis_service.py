@@ -42,7 +42,7 @@ def generate_analysis(
         
         # First priority: look for specific net profit keywords
         priority_keywords = ["net profit", "net income", "profit after tax", "pat", 
-                            "earnings after tax", "eat", "net earnings", "bottom line"]
+                            "earnings after tax", "eat", "profit for the year", "net earnings", "bottom line"]
         
         for key, value in income_statement.items():
             key_lower = key.lower()
