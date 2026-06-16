@@ -72,19 +72,48 @@ def generate_workbook(
 
         for key, value in data.items():
 
-            sheet.cell(
-                row=row,
-                column=1,
-                value=key
-            )
+            if isinstance(value, dict):
 
-            sheet.cell(
-                row=row,
-                column=2,
-                value=value
-            )
+                sheet.cell(
+                    row=row,
+                    column=1,
+                    value=key.upper()
+                )
 
-            row += 1
+                row += 1
+
+                for sub_key, sub_value in value.items():
+
+                    sheet.cell(
+                        row=row,
+                        column=1,
+                        value=sub_key
+                    )
+
+                    sheet.cell(
+                        row=row,
+                        column=2,
+                        value=sub_value
+                    )
+
+                    row += 1
+
+            else:
+
+                sheet.cell(
+                    row=row,
+                    column=1,
+                    value=key
+                )
+
+                sheet.cell(
+                    row=row,
+                    column=2,
+                    value=value
+                )
+
+                row += 1
+                
         sheet_rows[sheet] = row
     
     analysis_data = json.loads(
@@ -95,19 +124,47 @@ def generate_workbook(
 
     for key, value in analysis_data.items():
 
-        analysis_sheet.cell(
-            row=row,
-            column=1,
-            value=key
-        )
+        if isinstance(value, dict):
 
-        analysis_sheet.cell(
-            row=row,
-            column=2,
-            value=value
-        )
+            analysis_sheet.cell(
+                row=row,
+                column=1,
+                value=key.upper()
+            )
 
-        row += 1
+            row += 1
+
+            for sub_key, sub_value in value.items():
+
+                analysis_sheet.cell(
+                    row=row,
+                    column=1,
+                    value=sub_key
+                )
+
+                analysis_sheet.cell(
+                    row=row,
+                    column=2,
+                    value=sub_value
+                )
+
+                row += 1
+
+        else:
+
+            analysis_sheet.cell(
+                row=row,
+                column=1,
+                value=key
+            )
+
+            analysis_sheet.cell(
+                row=row,
+                column=2,
+                value=value
+            )
+
+            row += 1
     
     file_path = (
         f"generated_workbooks/"
