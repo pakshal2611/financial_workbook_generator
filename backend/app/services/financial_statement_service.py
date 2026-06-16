@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.models.document_extraction import DocumentExtraction
 from app.models.financial_statements import FinancialStatement
+from app.models.document import Document
 
 from app.services.llm_service import client
 import os
@@ -91,6 +92,13 @@ def extract_financial_statements(
     db.add(income_statement)
     db.add(balance_sheet)
     db.add(cash_flow)
+
+    document = db.query(
+        Document
+    ).filter_by(id=document_id).first()
+
+    if document:
+        document.status = "statements"
 
     db.commit()
 

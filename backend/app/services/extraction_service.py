@@ -42,6 +42,8 @@ def extract_document(
 
     db.add(extraction)
 
+    document.status = "extracted"
+
     db.commit()
 
     db.refresh(extraction)

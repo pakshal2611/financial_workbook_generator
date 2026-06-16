@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
@@ -19,10 +20,13 @@ def extract_pdf(
     document_id: int,
     db: Session = Depends(get_db)
 ):
-
-    extraction = extract_document(
-        db,
-        document_id
-    )
-
-    return extraction
+    try:
+        extraction = extract_document(
+            db,
+            document_id
+        )
+        if extraction is None:
+            raise HTTPException(status_code=404, detail="Document not found")
+        return extraction
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Extraction failed: {str(e)}")

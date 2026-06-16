@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
@@ -20,8 +21,11 @@ def create_workbook(
     document_id: int,
     db: Session = Depends(get_db)
 ):
-
-    return generate_workbook(
-        db,
-        document_id
-    )
+    try:
+        result = generate_workbook(
+            db,
+            document_id
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Workbook generation failed: {str(e)}")

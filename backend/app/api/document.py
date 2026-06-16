@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from fastapi import UploadFile
 from fastapi import File
 from fastapi import Depends
+from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
@@ -53,8 +54,13 @@ def remove_document(
     document_id: int,
     db: Session = Depends(get_db)
     ):
-
-    return delete_document(
-        db,
-        document_id
-    )
+    try:
+        result = delete_document(
+            db,
+            document_id
+        )
+        if result is None:
+            raise HTTPException(status_code=404, detail="Document not found")
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete document: {str(e)}")

@@ -1,17 +1,19 @@
 import json
 import os
 
-from openpyxl import Workbook
+from openpyxl import Workbook as ExcelWorkbook
 
 from app.models.financial_statements import FinancialStatement
 from app.models.financial_analysis import FinancialAnalysis
+from app.models.workbooks import Workbook
+from app.models.document import Document
 
 def generate_workbook(
     db,
     document_id
     ):
 
-    workbook = Workbook()
+    workbook = ExcelWorkbook()
 
     statements = db.query(
     FinancialStatement
@@ -113,6 +115,22 @@ def generate_workbook(
     )
 
     workbook.save(file_path)
+
+    workbook_record = Workbook(
+        document_id=document_id,
+        file_path=file_path
+    )
+
+    db.add(workbook_record)
+
+    document = db.query(Document).filter_by(
+        id=document_id
+    ).first()
+
+    if document:
+        document.status = "workbook"
+
+    db.commit()
 
     return {
         "message": "Workbook Generated",

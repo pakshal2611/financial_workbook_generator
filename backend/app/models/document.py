@@ -16,12 +16,28 @@ class Document(Base):
 
     status = Column(String, default="uploaded")
 
+    document_extraction = relationship(
+        "DocumentExtraction",
+        cascade="all, delete-orphan",
+        back_populates="document"
+    )
+
     financial_statements = relationship(
-    "FinancialStatement",
-    back_populates="document"
+        "FinancialStatement",
+        back_populates="document",
+        foreign_keys="FinancialStatement.document_id",
+        cascade="all, delete-orphan"
+    )
+
+    financial_analysis = relationship(
+        "FinancialAnalysis",
+        cascade="all, delete-orphan",
+        back_populates="document"
     )
 
     workbook = relationship(
         "Workbook",
-        back_populates="document"
+        back_populates="document",
+        foreign_keys="Workbook.document_id",
+        cascade="all, delete-orphan"
     )

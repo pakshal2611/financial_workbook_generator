@@ -1,0 +1,113 @@
+# === Environment variables ===
+# Ignore local env files but keep the template tracked
+.env
+.env.local
+.env.*
+!.env.template
+
+# === Python ===
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+env.bak/
+venv.bak/
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build / packaging
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Native extensions
+*.so
+.Python
+
+# Testing / analysis
+.pytest_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.hypothesis/
+.nox/
+
+# === Node / Frontend ===
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/build/
+/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# === Editors / IDEs ===
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.swo
+*~
+
+# === Logs / temp ===
+logs/
+*.log
+*.tmp
+*.bak
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# === Project-specific generated files ===
+backend/generated_workbooks/
+generated_workbooks/
+backend/app/uploads/
+backend/app/generated_workbooks/
+
+# Ignore local utility scripts that shouldn't be published
+backend/temp.py
+backend/test_connection.py
+
+# Optional: local DB files
+backend/*.sqlite3
+
+# === Tooling / locks ===
+Pipfile.lock
+poetry.lock
+
+# mypy
+.dmypy.json
+
+# === Workspace markdowns you asked to ignore ===
+DEBUG_ANALYSIS.md
+DELETE_FLOW_TRACE.md
+QUICK_START.md
+SETUP_GUIDE.md
+README.md
+
+# Keep .gitattributes but don't ignore .gitignore itself
+.gitattributes

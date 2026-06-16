@@ -12,10 +12,10 @@ class FinancialAnalysis(Base):
 
     document_id = Column(
         Integer,
-        ForeignKey("documents.id"),
+        ForeignKey("documents.id", ondelete="CASCADE"),
         nullable=False
     )
 
     analysis_json = Column(Text)
 
-    document = relationship("Document")
+    document = relationship("Document", back_populates="financial_analysis")

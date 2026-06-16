@@ -12,10 +12,10 @@ class DocumentExtraction(Base):
 
     document_id = Column(
         Integer,
-        ForeignKey("documents.id"),
+        ForeignKey("documents.id", ondelete="CASCADE"),
         nullable=False
     )
 
     raw_text = Column(Text)
 
-    document = relationship("Document")
+    document = relationship("Document", back_populates="document_extraction")
