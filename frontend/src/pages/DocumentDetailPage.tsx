@@ -173,7 +173,29 @@ export function DocumentDetailPage() {
     if (!workbookPath) return;
     
     try {
-      window.open(workbookPath, "_blank", "noopener,noreferrer");
+      let finalUrl = workbookPath.trim();
+      
+      // If the URL accidentally got prefixed with a path like /api/, extract the http part
+      const httpIndex = finalUrl.indexOf("http");
+      if (httpIndex > 0) {
+        finalUrl = finalUrl.substring(httpIndex);
+      }
+      
+      // Fix missing double slash if the browser or a proxy collapsed it (e.g. https:/...)
+      if (finalUrl.startsWith("https:/") && !finalUrl.startsWith("https://")) {
+        finalUrl = finalUrl.replace("https:/", "https://");
+      } else if (finalUrl.startsWith("http:/") && !finalUrl.startsWith("http://")) {
+        finalUrl = finalUrl.replace("http:/", "http://");
+      }
+
+      // Ensure it opens as an external link without referrer policies interfering
+      const link = window.document.createElement("a");
+      link.href = finalUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      window.document.body.appendChild(link);
+      link.click();
+      window.document.body.removeChild(link);
     } catch {
       addToast("error", "Failed to download workbook");
     }

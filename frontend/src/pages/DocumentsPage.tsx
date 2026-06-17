@@ -59,7 +59,10 @@ export function DocumentsPage() {
         );
       }
     });
-    fetchDocuments();
+    const init = async () => {
+      await fetchDocuments();
+    };
+    void init();
   }, [fetchDocuments, addToast]);
 
   async function handleUpload(file: File) {
@@ -94,7 +97,7 @@ export function DocumentsPage() {
       setDeleteTarget(null);
     } catch (error: unknown) {
       console.error("Delete failed:", error);
-      const err = error as any;
+      const err = error as Error | { message?: string, response?: { data?: { detail?: string }, status?: number } };
       console.error("Error details:", {
         message: err.message,
         response: err.response?.data,

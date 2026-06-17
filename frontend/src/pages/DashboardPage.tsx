@@ -33,7 +33,10 @@ export function DashboardPage() {
   }, [addToast]);
 
   useEffect(() => {
-    fetchDocuments();
+    const init = async () => {
+      await fetchDocuments();
+    };
+    void init();
   }, [fetchDocuments]);
 
   async function handleUpload(file: File) {
