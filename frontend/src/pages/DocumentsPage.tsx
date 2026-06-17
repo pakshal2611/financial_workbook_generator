@@ -97,7 +97,10 @@ export function DocumentsPage() {
       setDeleteTarget(null);
     } catch (error: unknown) {
       console.error("Delete failed:", error);
-      const err = error as Error | { message?: string, response?: { data?: { detail?: string }, status?: number } };
+      interface ApiError extends Error {
+        response?: { data?: { detail?: string }, status?: number };
+      }
+      const err = error as ApiError;
       console.error("Error details:", {
         message: err.message,
         response: err.response?.data,
