@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, Plus, BarChart3, BookOpen, ArrowRight } from "lucide-react";
 import { Navbar } from "../components/layout/Navbar";
@@ -21,11 +21,7 @@ export function DashboardPage() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
-  async function fetchDocuments() {
+  const fetchDocuments = useCallback(async () => {
     try {
       const data = await getDocuments();
       setDocuments(data);
@@ -34,7 +30,11 @@ export function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [addToast]);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
 
   async function handleUpload(file: File) {
     setUploading(true);

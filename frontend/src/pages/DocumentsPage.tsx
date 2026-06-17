@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, FileText } from "lucide-react";
 import { Navbar } from "../components/layout/Navbar";
@@ -30,6 +30,23 @@ export function DocumentsPage() {
   const [deleting, setDeleting] = useState(false);
   const [backendHealthy, setBackendHealthy] = useState<boolean | null>(null);
 
+  const fetchDocuments = useCallback(async () => {
+    try {
+      const data = await getDocuments();
+      setDocuments(data);
+    } catch (error: unknown) {
+      console.error("Failed to fetch documents:", error);
+      const err = error as Error | { message?: string };
+      addToast(
+        "error",
+        "Failed to load documents",
+        "message" in err && err.message ? err.message : "Connection error"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [addToast]);
+
   useEffect(() => {
     // Check backend health on component mount
     checkBackendHealth().then((healthy) => {
@@ -43,23 +60,7 @@ export function DocumentsPage() {
       }
     });
     fetchDocuments();
-  }, []);
-
-  async function fetchDocuments() {
-    try {
-      const data = await getDocuments();
-      setDocuments(data);
-    } catch (error: any) {
-      console.error("Failed to fetch documents:", error);
-      addToast(
-        "error",
-        "Failed to load documents",
-        error.message || "Connection error"
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, [fetchDocuments, addToast]);
 
   async function handleUpload(file: File) {
     setUploading(true);
@@ -68,12 +69,13 @@ export function DocumentsPage() {
       addToast("success", "Document uploaded", doc.filename);
       setUploadOpen(false);
       navigate(`/documents/${doc.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Upload failed:", error);
+      const err = error as Error | { message?: string };
       addToast(
         "error",
         "Upload failed",
-        error.message || "Unknown error"
+        "message" in err && err.message ? err.message : "Unknown error"
       );
     } finally {
       setUploading(false);
@@ -90,17 +92,18 @@ export function DocumentsPage() {
       setDocuments((prev) => prev.filter((d) => d.id !== deleteTarget.id));
       addToast("success", "Document deleted", deleteTarget.filename);
       setDeleteTarget(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Delete failed:", error);
+      const err = error as any;
       console.error("Error details:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
       });
       addToast(
         "error",
         "Failed to delete document",
-        error.response?.data?.detail || error.message || "Unknown error"
+        err.response?.data?.detail || err.message || "Unknown error"
       );
     } finally {
       setDeleting(false);

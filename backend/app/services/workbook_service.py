@@ -1,8 +1,10 @@
 import json
 import os
+import tempfile
 
 from openpyxl import Workbook as ExcelWorkbook
 
+from app.services.storage_service import upload_workbook
 from app.models.financial_statements import FinancialStatement
 from app.models.financial_analysis import FinancialAnalysis
 from app.models.workbooks import Workbook
@@ -166,16 +168,29 @@ def generate_workbook(
 
             row += 1
     
-    file_path = (
-        f"generated_workbooks/"
-        f"workbook_{document_id}.xlsx"
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".xlsx"
+        ) as temp_file:
+
+        temp_path = temp_file.name
+
+    workbook.save(temp_path)
+
+    with open(temp_path, "rb") as workbook_file:
+
+        workbook_content = workbook_file.read()
+
+    workbook_url = upload_workbook(
+        f"workbook_{document_id}.xlsx",
+        workbook_content
     )
 
-    workbook.save(file_path)
+    os.remove(temp_path)
 
     workbook_record = Workbook(
         document_id=document_id,
-        file_path=file_path
+        file_path=workbook_url
     )
 
     db.add(workbook_record)
@@ -191,5 +206,5 @@ def generate_workbook(
 
     return {
         "message": "Workbook Generated",
-        "file_path": file_path
+        "file_path": workbook_url
     }

@@ -1,14 +1,30 @@
 import fitz
+import os
+import requests
+import tempfile
 
 from app.models.document import Document
 from app.models.document_extraction import DocumentExtraction
 
 
-def extract_text_from_pdf(file_path):
+def extract_text_from_pdf(file_url):
+
+    response = requests.get(file_url)
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".pdf"
+    ) as temp_file:
+
+        temp_file.write(
+            response.content
+        )
+
+        temp_path = temp_file.name
 
     text = ""
 
-    pdf = fitz.open(file_path)
+    pdf = fitz.open(temp_path)
 
     for page in pdf:
 
@@ -16,8 +32,9 @@ def extract_text_from_pdf(file_path):
 
     pdf.close()
 
-    return text
+    os.remove(temp_path)
 
+    return text
 
 def extract_document(
     db,

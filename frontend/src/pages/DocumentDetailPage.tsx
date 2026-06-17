@@ -72,7 +72,10 @@ export function DocumentDetailPage() {
   }, [documentId, addToast]);
 
   useEffect(() => {
-    fetchDocument();
+    const init = async () => {
+      await fetchDocument();
+    };
+    void init();
   }, [fetchDocument]);
 
   // ── Derived state from the API response ────────────
@@ -170,27 +173,8 @@ export function DocumentDetailPage() {
     if (!workbookPath) return;
     
     try {
-      // Fetch the file as a binary blob through our API proxy
-      const response = await fetch(`/api/${workbookPath}`);
-      if (!response.ok) throw new Error("Download failed");
-      
-      const blob = await response.blob();
-      
-      // Create a temporary invisible link to trigger the download prompt
-      const url = window.URL.createObjectURL(blob);
-      const a = window.document.createElement("a");
-      a.href = url;
-      // Extract the filename from the path, or default to a standard name
-      const filename = workbookPath.split("/").pop() || `workbook_${documentId}.xlsx`;
-      a.download = filename; 
-      
-      window.document.body.appendChild(a);
-      a.click();
-      
-      // Cleanup
-      window.URL.revokeObjectURL(url);
-      window.document.body.removeChild(a);
-    } catch (err) {
+      window.open(workbookPath, "_blank", "noopener,noreferrer");
+    } catch {
       addToast("error", "Failed to download workbook");
     }
   }

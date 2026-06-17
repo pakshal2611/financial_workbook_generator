@@ -8,6 +8,7 @@ from app.models.document_extraction import DocumentExtraction
 from app.models.financial_statements import FinancialStatement
 from app.models.financial_analysis import FinancialAnalysis
 from app.models.workbooks import Workbook
+from app.services.storage_service import upload_pdf
 
 
 UPLOAD_DIR = "app/uploads"
@@ -18,21 +19,16 @@ def save_document(
     file
 ):
 
-    file_path = os.path.join(
-        UPLOAD_DIR,
-        file.filename
+    file_content = file.file.read()
+
+    file_url = upload_pdf(
+        file.filename,
+        file_content
     )
-
-    with open(file_path, "wb") as buffer:
-
-        shutil.copyfileobj(
-            file.file,
-            buffer
-        )
 
     document = Document(
         filename=file.filename,
-        file_path=file_path,
+        file_path=file_url,
         status="uploaded"
     )
 
