@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Plus, BarChart3, BookOpen, ArrowRight } from "lucide-react";
+import { FileText, Plus, BarChart3, BookOpen, ArrowRight, Search } from "lucide-react";
 import { Navbar } from "../components/layout/Navbar";
 import { Button } from "../components/ui/Button";
 import { StatusBadge } from "../components/ui/StatusBadge";
+import { SearchInput } from "../components/ui/SearchInput";
 import { UploadModal } from "../components/documents/UploadModal";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner";
 import { EmptyState } from "../components/ui/EmptyState";
@@ -20,6 +21,17 @@ export function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  // Search state (Dashboard: search only, no pagination)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery.trim().toLowerCase());
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const fetchDocuments = useCallback(async () => {
     try {
@@ -59,7 +71,15 @@ export function DashboardPage() {
     (d) => d.status === "analyzed" || d.status === "workbook"
   ).length;
   const workbooks = documents.filter((d) => d.status === "workbook").length;
-  const recent = documents.slice(-5).reverse();
+  const recent = useMemo(() => documents.slice(-10).reverse(), [documents]);
+
+  // Filter recent documents by search
+  const filteredRecent = useMemo(() => {
+    if (!debouncedQuery) return recent;
+    return recent.filter((doc) =>
+      doc.filename.toLowerCase().includes(debouncedQuery)
+    );
+  }, [recent, debouncedQuery]);
 
   const stats = [
     { label: "Total Documents", value: total, icon: FileText, color: "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400" },
@@ -118,10 +138,7 @@ export function DashboardPage() {
                   className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900"
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${s.color}`}>
-                      <s.icon className="h-4 w-4" />
-                    </div>
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <span className="text-lg font-medium text-gray-500 dark:text-gray-400">
                       {s.label}
                     </span>
                   </div>
@@ -146,6 +163,17 @@ export function DashboardPage() {
                 </button>
               </div>
 
+              {/* Search bar for recent documents */}
+              {recent.length > 0 && (
+                <div className="px-6 pt-4">
+                  <SearchInput
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder="Search recent documents…"
+                  />
+                </div>
+              )}
+
               {recent.length === 0 ? (
                 <EmptyState
                   icon={<FileText className="h-5 w-5" />}
@@ -161,9 +189,15 @@ export function DashboardPage() {
                     </Button>
                   }
                 />
+              ) : filteredRecent.length === 0 ? (
+                <EmptyState
+                  icon={<Search className="h-5 w-5" />}
+                  title="No matching documents found"
+                  description="Try adjusting your search query."
+                />
               ) : (
                 <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                  {recent.map((doc) => (
+                  {filteredRecent.map((doc) => (
                     <div
                       key={doc.id}
                       className="flex items-center justify-between px-6 py-3.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"

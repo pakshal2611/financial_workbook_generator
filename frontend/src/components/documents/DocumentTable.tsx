@@ -46,9 +46,6 @@ export function DocumentTable({ documents, onDelete }: DocumentTableProps) {
                     <p className="font-medium text-gray-900 dark:text-gray-100">
                       {doc.filename}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-xs">
-                      {doc.file_path}
-                    </p>
                   </div>
                 </div>
               </td>

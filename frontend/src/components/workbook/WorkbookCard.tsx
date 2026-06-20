@@ -27,7 +27,7 @@ export function WorkbookCard({
         {hasWorkbook ? (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                 <FileSpreadsheet className="h-5 w-5" />
               </div>
               <div>
@@ -35,7 +35,7 @@ export function WorkbookCard({
                   Workbook Generated
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {filePath}
+                  {filePath?.split("/").pop()}
                 </p>
               </div>
             </div>

@@ -263,7 +263,7 @@ export function DocumentDetailPage() {
         <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                 <FileTextIcon className="h-5 w-5" />
               </div>
               <div>
@@ -271,7 +271,7 @@ export function DocumentDetailPage() {
                   {document.filename}
                 </h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  Document #{document.id} · {document.file_path}
+                  Document #{document.id}
                 </p>
               </div>
             </div>
@@ -287,8 +287,9 @@ export function DocumentDetailPage() {
           <h3 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-4">
             Actions
           </h3>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3" style={{ paddingLeft: "60px", paddingRight: "60px" }}>
             <Button
+              style={{ margin: "0 10px" }}
               variant={hasExtraction ? "secondary" : "primary"}
               size="sm"
               loading={extractingText}
@@ -299,6 +300,7 @@ export function DocumentDetailPage() {
             </Button>
 
             <Button
+              style={{ margin: "0 10px" }}
               variant={hasStatements ? "secondary" : "primary"}
               size="sm"
               loading={extractingStatements}
@@ -309,6 +311,7 @@ export function DocumentDetailPage() {
             </Button>
 
             <Button
+              style={{ margin: "0 10px" }}
               variant={hasAnalysis ? "secondary" : "primary"}
               size="sm"
               loading={generatingAnalysis}
@@ -319,6 +322,7 @@ export function DocumentDetailPage() {
             </Button>
 
             <Button
+              style={{ margin: "0 10px" }}
               variant={hasWorkbook ? "secondary" : "primary"}
               size="sm"
               loading={generatingWorkbook}

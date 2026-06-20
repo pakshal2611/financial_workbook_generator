@@ -35,15 +35,12 @@ export function AnalysisCard({ analysis }: AnalysisCardProps) {
         </h3>
       </div>
       <div className="grid grid-cols-1 divide-y divide-gray-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0 dark:divide-gray-800">
-        {METRICS.map(({ key, label, icon: Icon, format }) => {
+        {METRICS.map(({ key, label, icon: _Icon, format }) => {
           const value = analysis[key];
           return (
             <div key={key} className="px-6 py-5">
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
-                  <Icon className="h-3.5 w-3.5" />
-                </div>
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <span className="text-lg font-medium text-gray-500 dark:text-gray-400">
                   {label}
                 </span>
               </div>

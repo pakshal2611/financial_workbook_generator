@@ -1,15 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, FileText } from "lucide-react";
+import { Plus, FileText, Search } from "lucide-react";
 import { Navbar } from "../components/layout/Navbar";
 import { Button } from "../components/ui/Button";
 import { DocumentTable } from "../components/documents/DocumentTable";
+import { SearchInput } from "../components/ui/SearchInput";
+import { Pagination } from "../components/ui/Pagination";
 import { UploadModal } from "../components/documents/UploadModal";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ToastContainer } from "../components/ui/Toast";
 import { useToast } from "../hooks/useToast";
+import { useSearchAndPagination } from "../hooks/useSearchAndPagination";
 import {
   getDocuments,
   uploadDocument,
@@ -29,6 +32,17 @@ export function DocumentsPage() {
   const [deleteTarget, setDeleteTarget] = useState<DocumentListItem | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [backendHealthy, setBackendHealthy] = useState<boolean | null>(null);
+
+  const {
+    searchQuery,
+    setSearchQuery,
+    debouncedQuery,
+    currentPage,
+    setCurrentPage,
+    filteredItems,
+    paginatedItems,
+    totalPages,
+  } = useSearchAndPagination(documents, (d) => d.filename, 10);
 
   const fetchDocuments = useCallback(async () => {
     try {
@@ -142,6 +156,11 @@ export function DocumentsPage() {
     );
   }
 
+  // Determine what content to show
+  const hasDocuments = documents.length > 0;
+  const hasSearchResults = filteredItems.length > 0;
+  const isSearching = debouncedQuery.length > 0;
+
   return (
     <>
       <Navbar
@@ -161,7 +180,7 @@ export function DocumentsPage() {
       <div className="p-6">
         {loading ? (
           <LoadingSpinner label="Loading documents…" />
-        ) : documents.length === 0 ? (
+        ) : !hasDocuments ? (
           <EmptyState
             icon={<FileText className="h-5 w-5" />}
             title="No documents uploaded"
@@ -178,10 +197,42 @@ export function DocumentsPage() {
             }
           />
         ) : (
-          <DocumentTable
-            documents={documents}
-            onDelete={(doc) => setDeleteTarget(doc)}
-          />
+          <div className="space-y-4">
+            {/* Search bar */}
+            <div className="flex items-center justify-between gap-4">
+              <SearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search documents…"
+              />
+              <p className="text-sm text-gray-500 dark:text-gray-400 shrink-0">
+                {isSearching
+                  ? `${filteredItems.length} result${filteredItems.length !== 1 ? "s" : ""} for "${searchQuery.trim()}"`
+                  : `${documents.length} document${documents.length !== 1 ? "s" : ""}`}
+              </p>
+            </div>
+
+            {/* Documents table or empty search state */}
+            {!hasSearchResults ? (
+              <EmptyState
+                icon={<Search className="h-5 w-5" />}
+                title="No documents found"
+                description="Try adjusting your search query."
+              />
+            ) : (
+              <>
+                <DocumentTable
+                  documents={paginatedItems}
+                  onDelete={(doc) => setDeleteTarget(doc)}
+                />
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </>
+            )}
+          </div>
         )}
       </div>
 
