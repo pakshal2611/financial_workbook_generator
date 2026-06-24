@@ -24,15 +24,21 @@ def generate_analysis(
 
     income_statement = None
 
-    for statement in statements:
+    # Prefer standalone, then consolidated, then legacy unprefixed type.
+    priority_types = [
+        "standalone_income_statement",
+        "consolidated_income_statement",
+        "income_statement",
+    ]
 
-        if statement.statement_type == "income_statement":
-
-            income_statement = json.loads(
-                statement.data_json
-            )
-
+    for priority_type in priority_types:
+        for statement in statements:
+            if statement.statement_type == priority_type:
+                income_statement = json.loads(statement.data_json)
+                break
+        if income_statement:
             break
+
     revenue = 0
     net_profit = 0
 

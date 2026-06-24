@@ -6,8 +6,16 @@
 export interface FinancialStatement {
   id: number;
   document_id: number;
-  statement_type: "income_statement" | "balance_sheet" | "cash_flow";
-  year: number | null;
+  statement_type: 
+    | "standalone_income_statement" 
+    | "standalone_balance_sheet" 
+    | "standalone_cash_flow"
+    | "consolidated_income_statement" 
+    | "consolidated_balance_sheet" 
+    | "consolidated_cash_flow"
+    | "income_statement" 
+    | "balance_sheet" 
+    | "cash_flow";
   data_json: string;
 }
 

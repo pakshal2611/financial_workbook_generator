@@ -29,33 +29,38 @@ def generate_workbook(
         FinancialAnalysis.document_id == document_id
     ).first()
 
-    income_sheet = workbook.active
-
-    income_sheet.title = "Income Statement"
-
-    balance_sheet = workbook.create_sheet(
-        "Balance Sheet"
-    )
-
-    cash_flow = workbook.create_sheet(
-        "Cash Flow"
-    )
-
-    analysis_sheet = workbook.create_sheet(
-        "Analysis"
-    )
-
-    sheet_map = {
-        "income_statement": income_sheet,
-        "balance_sheet": balance_sheet,
-        "cash_flow": cash_flow
+    # Human-readable sheet names for each statement_type.
+    _SHEET_NAMES = {
+        # New prefixed types
+        "standalone_income_statement": "Standalone Income Statement",
+        "standalone_balance_sheet": "Standalone Balance Sheet",
+        "standalone_cash_flow": "Standalone Cash Flow",
+        "consolidated_income_statement": "Consolidated Income Statement",
+        "consolidated_balance_sheet": "Consolidated Balance Sheet",
+        "consolidated_cash_flow": "Consolidated Cash Flow",
+        # Legacy types (backward compatibility)
+        "income_statement": "Income Statement",
+        "balance_sheet": "Balance Sheet",
+        "cash_flow": "Cash Flow",
     }
 
-    sheet_rows = {
-        income_sheet: 1,
-        balance_sheet: 1,
-        cash_flow: 1
-    }
+    # Build sheets dynamically based on which statement_types exist.
+    sheet_map = {}
+    sheet_rows = {}
+    first_sheet = True
+
+    for statement in statements:
+        st = statement.statement_type
+        if st not in sheet_map:
+            sheet_name = _SHEET_NAMES.get(st, st)
+            if first_sheet:
+                sheet = workbook.active
+                sheet.title = sheet_name
+                first_sheet = False
+            else:
+                sheet = workbook.create_sheet(sheet_name)
+            sheet_map[st] = sheet
+            sheet_rows[sheet] = 1
 
     for statement in statements:
 
@@ -118,6 +123,14 @@ def generate_workbook(
                 
         sheet_rows[sheet] = row
     
+    # Create the Analysis sheet after all statement sheets.
+    if first_sheet:
+        # No statements existed — use the default active sheet.
+        analysis_sheet = workbook.active
+        analysis_sheet.title = "Analysis"
+    else:
+        analysis_sheet = workbook.create_sheet("Analysis")
+
     analysis_data = json.loads(
         analysis.analysis_json
     )

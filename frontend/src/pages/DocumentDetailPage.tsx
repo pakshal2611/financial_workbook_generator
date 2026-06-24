@@ -31,8 +31,16 @@ import type {
   FinancialAnalysis,
 } from "../types";
 
-// Statement type labels
 const STATEMENT_LABELS: Record<string, string> = {
+  // Standalone
+  standalone_income_statement: "Income Statement",
+  standalone_balance_sheet: "Balance Sheet",
+  standalone_cash_flow: "Cash Flow Statement",
+  // Consolidated
+  consolidated_income_statement: "Income Statement",
+  consolidated_balance_sheet: "Balance Sheet",
+  consolidated_cash_flow: "Cash Flow Statement",
+  // Legacy
   income_statement: "Income Statement",
   balance_sheet: "Balance Sheet",
   cash_flow: "Cash Flow Statement",
@@ -98,6 +106,21 @@ export function DocumentDetailPage() {
 
   const hasExtraction = !!extraction;
   const hasStatements = statements.length > 0;
+  
+  const standaloneStatements = useMemo(() => 
+    statements.filter((s) => s.statement_type.startsWith("standalone_")),
+    [statements]
+  );
+  
+  const consolidatedStatements = useMemo(() => 
+    statements.filter((s) => s.statement_type.startsWith("consolidated_")),
+    [statements]
+  );
+  
+  const legacyStatements = useMemo(() => 
+    statements.filter((s) => !s.statement_type.startsWith("standalone_") && !s.statement_type.startsWith("consolidated_")),
+    [statements]
+  );
   const hasAnalysis = !!analysisRecord;
   const hasWorkbook = !!workbookRecord;
   const workbookPath = workbookRecord?.file_path ?? null;
@@ -362,19 +385,57 @@ export function DocumentDetailPage() {
 
         {/* ── Financial Statements ─────────────────── */}
         {hasStatements && (
-          <div className="space-y-4">
-            <h3 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Financial Statements
-            </h3>
-            <div className="grid gap-4 lg:grid-cols-2">
-              {statements.map((stmt) => (
-                <StatementCard
-                  key={stmt.id}
-                  title={STATEMENT_LABELS[stmt.statement_type] ?? stmt.statement_type}
-                  dataJson={stmt.data_json}
-                />
-              ))}
-            </div>
+          <div className="space-y-6">
+            {standaloneStatements.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Standalone Financial Statements
+                </h3>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {standaloneStatements.map((stmt) => (
+                    <StatementCard
+                      key={stmt.id}
+                      title={STATEMENT_LABELS[stmt.statement_type] ?? stmt.statement_type}
+                      dataJson={stmt.data_json}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {consolidatedStatements.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Consolidated Financial Statements
+                </h3>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {consolidatedStatements.map((stmt) => (
+                    <StatementCard
+                      key={stmt.id}
+                      title={STATEMENT_LABELS[stmt.statement_type] ?? stmt.statement_type}
+                      dataJson={stmt.data_json}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {legacyStatements.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Financial Statements
+                </h3>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {legacyStatements.map((stmt) => (
+                    <StatementCard
+                      key={stmt.id}
+                      title={STATEMENT_LABELS[stmt.statement_type] ?? stmt.statement_type}
+                      dataJson={stmt.data_json}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

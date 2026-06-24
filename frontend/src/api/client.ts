@@ -108,7 +108,7 @@ export async function extractStatements(
   const { data } = await api.post<MessageResponse>(
     `/financial-statements/extract/${documentId}`,
     null,
-    { timeout: 60000 } // 60 second timeout for potentially long extraction
+    { timeout: 300000 } // 5 minute timeout — page detection + LLM on large reports can be slow
   );
   return data;
 }
